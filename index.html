@@ -255,8 +255,39 @@
 
         function handleSubmit() {
             const name = document.getElementById('client-name').value;
-            if(!name) { alert("Please enter your name."); return; }
-            alert("Success! Sending rankings for " + name);
+            if (!name) { alert("Please enter your name."); return; }
+        
+            // 1. GET THE CLIENT ID FROM THE URL (?id=Kelsey_Dan)
+            const urlParams = new URLSearchParams(window.location.search);
+            const clientId = urlParams.get('id') || 'unknown';
+        
+            // 2. PASTE YOUR GOOGLE SCRIPT URL HERE
+            const scriptURL = "https://script.google.com/macros/s/AKfycbzzc-aNjkv_19_xvlZPVFjiLTgFMxC1GGmMPXTfTcu6YbkmpUy6r0sGs-mpuq-H809MAg/exec";
+        
+            // 3. PREPARE THE DATA PACKET
+            const rankings = factors.map((f, i) => ({
+                factor: f,
+                score: parseInt(document.getElementById(`slide-${i}`).value)
+            }));
+        
+            const payload = {
+                clientName: name,
+                clientId: clientId,
+                rankings: rankings
+            };
+        
+            // 4. SEND THE DATA TO GOOGLE SHEETS
+            fetch(scriptURL, {
+                method: "POST",
+                mode: "no-cors", // Crucial for Google Apps Script
+                cache: "no-cache",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                alert("Success! Your priorities have been sent to Eli Smith Realty.");
+            })
+            .catch(err => alert("Error: " + err));
         }
     </script>
 </body>
