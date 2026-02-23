@@ -253,18 +253,22 @@
             }
         }
 
-        function handleSubmit() {
+        async function handleSubmit() {
+            const submitBtn = document.getElementById('submit');
             const name = document.getElementById('client-name').value;
-            if (!name) { alert("Please enter your name."); return; }
-        
-            // 1. GET THE CLIENT ID FROM THE URL (?id=Kelsey_Dan)
             const urlParams = new URLSearchParams(window.location.search);
             const clientId = urlParams.get('id') || 'unknown';
         
-            // 2. PASTE YOUR GOOGLE SCRIPT URL HERE
-            const scriptURL = "https://script.google.com/macros/s/AKfycbzzc-aNjkv_19_xvlZPVFjiLTgFMxC1GGmMPXTfTcu6YbkmpUy6r0sGs-mpuq-H809MAg/exec";
+            if (!name) { 
+                alert("Please enter your name."); 
+                return; 
+            }
         
-            // 3. PREPARE THE DATA PACKET
+            // 1. IMPROVE UX: Disable button and show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Sending...";
+            submitBtn.style.opacity = "0.5";
+        
             const rankings = factors.map((f, i) => ({
                 factor: f,
                 score: parseInt(document.getElementById(`slide-${i}`).value)
@@ -276,18 +280,29 @@
                 rankings: rankings
             };
         
-            // 4. SEND THE DATA TO GOOGLE SHEETS
-            fetch(scriptURL, {
-                method: "POST",
-                mode: "no-cors", // Crucial for Google Apps Script
-                cache: "no-cache",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            })
-            .then(() => {
+            const scriptURL = "https://script.google.com/macros/s/AKfycbzzc-aNjkv_19_xvlZPVFjiLTgFMxC1GGmMPXTfTcu6YbkmpUy6r0sGs-mpuq-H809MAg/exec";
+        
+            try {
+                // 2. SEND DATA
+                await fetch(scriptURL, {
+                    method: "POST",
+                    mode: "no-cors", // Required for Google Scripts
+                    cache: "no-cache",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+        
+                // 3. SUCCESS UX: Clear the form or redirect
                 alert("Success! Your priorities have been sent to Eli Smith Realty.");
-            })
-            .catch(err => alert("Error: " + err));
+                submitBtn.innerText = "Submitted ✅";
+                
+            } catch (err) {
+                alert("Error: " + err);
+                // Re-enable if it fails so they can try again
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit Rankings";
+                submitBtn.style.opacity = "1";
+            }
         }
     </script>
 </body>
