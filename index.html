@@ -5,25 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Housing Priorities | Eli Smith Realty</title>
     <style>
-        /* 1. Dynamic Grey Chromatic Background */
+        /* 1.  Minimalist Light-Shift Background */
         body {
             margin: 0;
             padding: 0;
             font-family: 'Inter', -apple-system, sans-serif;
-            /* Shifting through your requested hex range */
-            background: linear-gradient(135deg, #deddeb, #dde7eb, #deebdd, #ebebdd, #ebe2df, #ebdfe9);
-            background-size: 600% 600%;
-            animation: chromaticShift 45s ease infinite;
             color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
+            
+            /* The Light Engine */
+            background: #fdfdfd; /* Base neutral */
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(225, 225, 235, 0.3) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, rgba(245, 245, 245, 0.5) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, rgba(230, 230, 240, 0.3) 0, transparent 50%), 
+                radial-gradient(at 50% 100%, rgba(240, 240, 250, 0.2) 0, transparent 50%);
+            background-size: 200% 200%;
+            animation: subtleLight 25s ease-in-out infinite alternate;
         }
-
-        @keyframes chromaticShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        
+        @keyframes subtleLight {
+            0% {
+                background-position: 0% 0%;
+                filter: contrast(100%) brightness(100%);
+            }
+            50% {
+                background-position: 100% 100%;
+                filter: contrast(102%) brightness(101%);
+            }
+            100% {
+                background-position: 50% 0%;
+                filter: contrast(100%) brightness(100%);
+            }
+        }
+        
+        /* Glassmorphism for the Cards to let the light through */
+        .slider-card {
+            background: rgba(255, 255, 255, 0.6); /* Semi-transparent */
+            backdrop-filter: blur(5px); /* Softens the light behind the card */
+            padding: 20px;
+            margin-bottom: 12px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.02);
         }
 
         /* 2. Anchored Header & Responsive Score */
@@ -43,7 +70,7 @@
         }
 
         #logo {
-            height: 60px;
+            height: 90px;
             margin-bottom: 10px;
         }
 
