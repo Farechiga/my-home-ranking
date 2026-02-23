@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Housing Priorities | Eli Smith Realty</title>
+    <style>
+        /* 1. Dynamic Background */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(120deg, #ffffff, #f0f0f0, #e8e8e8, #f5f5f5);
+            background-size: 400% 400%;
+            animation: ambientShift 15s ease infinite;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @keyframes ambientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 2. Fixed Header & Score */
+        header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        #logo {
+            max-width: 200px;
+            margin-bottom: 15px;
+        }
+
+        #score-display {
+            font-size: 2rem;
+            font-weight: 700;
+            transition: color 0.3s ease;
+        }
+
+        .score-invalid { color: #d9534f; }
+        .score-valid { color: #5cb85c; }
+
+        /* 3. Text Entry Prompt */
+        .name-container {
+            margin: 30px 0;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-bottom: 2px solid #ccc;
+            background: transparent;
+            font-size: 1.2rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-bottom-color: #333;
+        }
+
+        /* 5. Sliders */
+        .factor-list {
+            width: 90%;
+            max-width: 600px;
+            padding-bottom: 100px;
+        }
+
+        .slider-group {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="range"] {
+            flex-grow: 1;
+            cursor: pointer;
+        }
+
+        /* 6. The Plus Button */
+        .add-btn {
+            background: #eee;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .add-btn:hover { background: #ddd; }
+
+        /* 7. Submit Button */
+        .submit-btn {
+            background: #333;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 40px 0;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .submit-btn:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="Assets/EliSmithRealty.png" id="logo" alt="Eli Smith Realty">
+        <div id="score-display"><span id="current-score">100</span> / 100</div>
+    </header>
+
+    <div class="name-container">
+        <input type="text" id="client-name" placeholder="Your Name">
+    </div>
+
+    <div class="factor-list" id="factors">
+        </div>
+
+    <button class="submit-btn" id="submit" onclick="handleSubmit()">Submit Priorities</button>
+
+    <script>
+        const factors = [
+            "Neighborhood", "Street", "Curb appeal", "No street noise", "Privacy",
+            "Style / design", "Newly renovated", "Well-built", "Windows / light", "Spaciousness",
+            "Layout / flow", "Dining / living room", "Kitchen", "Large bedrooms", "Bathrooms",
+            "Extra rooms", "Appliances", "Garage / parking", "Yard / pet friendly", "Resale value"
+        ];
+
+        const container = document.getElementById('factors');
+        const scoreDisplay = document.getElementById('current-score');
+        const scoreWrapper = document.getElementById('score-display');
+        const submitBtn = document.getElementById('submit');
+
+        // Initialize Sliders
+        factors.forEach((factor, index) => {
+            const div = document.createElement('div');
+            div.className = 'slider-group';
+            div.innerHTML = `
+                <div class="label-row">
+                    <span>${factor}</span>
+                    <span id="val-${index}">5</span>
+                </div>
+                <div class="control-row">
+                    <input type="range" id="slide-${index}" min="0" max="10" value="5" oninput="updateScore()">
+                    <button class="add-btn" onclick="increaseByOne(${index})">+</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+
+        function increaseByOne(index) {
+            const slider = document.getElementById(`slide-${index}`);
+            // Logic to allow going past 10
+            let currentVal = parseInt(slider.value);
+            slider.max = Math.max(slider.max, currentVal + 1);
+            slider.value = currentVal + 1;
+            updateScore();
+        }
+
+        function updateScore() {
+            let total = 0;
+            factors.forEach((_, index) => {
+                const val = parseInt(document.getElementById(`slide-${index}`).value);
+                document.getElementById(`val-${index}`).innerText = val;
+                total += val;
+            });
+
+            scoreDisplay.innerText = total;
+
+            if (total > 100) {
+                scoreWrapper.className = 'score-invalid';
+                submitBtn.disabled = true;
+            } else {
+                scoreWrapper.className = 'score-valid';
+                submitBtn.disabled = false;
+            }
+        }
+
+        function handleSubmit() {
+            const total = parseInt(scoreDisplay.innerText);
+            if (total > 100) {
+                alert("Please adjust score to within 100 points");
+                return;
+            }
+            alert("Success! Sending data to Google Sheets...");
+            // This is where your fetch() to Google Apps Script would go
+        }
+    </script>
+</body>
+</html>
