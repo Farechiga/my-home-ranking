@@ -5,100 +5,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Housing Priorities | Eli Smith Realty</title>
     <style>
-        /* 1. Dynamic Background */
+        /* 1. Dynamic Chromatic Background */
         body {
             margin: 0;
             padding: 0;
             font-family: 'Inter', -apple-system, sans-serif;
-            background: linear-gradient(120deg, #ffffff, #f0f0f0, #e8e8e8, #f5f5f5);
-            background-size: 400% 400%;
-            animation: ambientShift 15s ease infinite;
+            /* Shifting through your requested hex range */
+            background: linear-gradient(135deg, #deddeb, #dde7eb, #deebdd, #ebebdd, #ebe2df, #ebdfe9);
+            background-size: 600% 600%;
+            animation: chromaticShift 45s ease infinite;
             color: #333;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        @keyframes ambientShift {
+        @keyframes chromaticShift {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        /* 2. Fixed Header & Score */
+        /* 2. Anchored Header & Responsive Score */
         header {
             position: sticky;
             top: 0;
             width: 100%;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            padding: 20px 0;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            padding: 15px 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
             z-index: 1000;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
         #logo {
-            max-width: 200px;
-            margin-bottom: 15px;
+            height: 60px;
+            margin-bottom: 10px;
         }
 
-        #score-display {
-            font-size: 2rem;
-            font-weight: 700;
-            transition: color 0.3s ease;
+        #score-container {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
         }
 
-        .score-invalid { color: #d9534f; }
-        .score-valid { color: #5cb85c; }
+        .score-invalid { color: #e63946; transform: scale(1.1); transition: 0.3s; }
+        .score-valid { color: #2a9d8f; }
 
-        /* 3. Text Entry Prompt */
-        .name-container {
-            margin: 30px 0;
+        /* Note and Name Entry */
+        .intro-section {
             width: 90%;
             max-width: 600px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .note {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.4;
         }
 
         input[type="text"] {
             width: 100%;
-            padding: 12px;
-            border: none;
-            border-bottom: 2px solid #ccc;
-            background: transparent;
-            font-size: 1.2rem;
-            outline: none;
-            transition: border-color 0.3s;
+            padding: 15px;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 10px;
+            font-size: 1.1rem;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
-        input[type="text"]:focus {
-            border-bottom-color: #333;
-        }
-
-        /* 5. Sliders */
+        /* Slider Styles */
         .factor-list {
             width: 90%;
             max-width: 600px;
-            padding-bottom: 100px;
+            padding: 30px 0 120px 0;
         }
 
-        .slider-group {
+        .slider-card {
             background: white;
             padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 12px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-            display: flex;
-            flex-direction: column;
+            margin-bottom: 12px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
 
-        .label-row {
+        .card-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
-            font-weight: 500;
+            margin-bottom: 15px;
+            font-weight: 600;
         }
 
         .control-row {
@@ -109,57 +111,57 @@
 
         input[type="range"] {
             flex-grow: 1;
-            cursor: pointer;
+            height: 6px;
+            border-radius: 5px;
+            accent-color: #333;
         }
 
-        /* 6. The Plus Button */
         .add-btn {
-            background: #eee;
+            background: #f0f0f0;
             border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            border-radius: 8px;
+            width: 35px;
+            height: 35px;
             cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .add-btn:hover { background: #ddd; }
-
-        /* 7. Submit Button */
         .submit-btn {
-            background: #333;
+            position: fixed;
+            bottom: 30px;
+            background: #222;
             color: white;
-            padding: 15px 40px;
+            padding: 18px 60px;
             border: none;
-            border-radius: 30px;
+            border-radius: 50px;
             font-size: 1.1rem;
+            font-weight: 600;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
             cursor: pointer;
-            margin: 40px 0;
-            transition: transform 0.2s, background 0.2s;
+            z-index: 1001;
         }
 
-        .submit-btn:disabled {
-            background: #999;
-            cursor: not-allowed;
-        }
+        .submit-btn:disabled { background: #ccc; box-shadow: none; }
     </style>
 </head>
 <body>
 
     <header>
         <img src="Assets/EliSmithRealty.png" id="logo" alt="Eli Smith Realty">
-        <div id="score-display"><span id="current-score">100</span> / 100</div>
+        <div id="score-container"><span id="current-score">100</span> / 100</div>
     </header>
 
-    <div class="name-container">
-        <input type="text" id="client-name" placeholder="Your Name">
+    <div class="intro-section">
+        <p class="note">Adjust your priorities up and down, keeping your total score at 100 points. Use "+" to add more than 10 points.</p>
+        <input type="text" id="client-name" placeholder="Enter Your Name">
     </div>
 
-    <div class="factor-list" id="factors">
-        </div>
+    <div class="factor-list" id="factors"></div>
 
-    <button class="submit-btn" id="submit" onclick="handleSubmit()">Submit Priorities</button>
+    <button class="submit-btn" id="submit" onclick="handleSubmit()">Submit Rankings</button>
 
     <script>
         const factors = [
@@ -171,62 +173,56 @@
 
         const container = document.getElementById('factors');
         const scoreDisplay = document.getElementById('current-score');
-        const scoreWrapper = document.getElementById('score-display');
         const submitBtn = document.getElementById('submit');
 
-        // Initialize Sliders
         factors.forEach((factor, index) => {
-            const div = document.createElement('div');
-            div.className = 'slider-group';
-            div.innerHTML = `
-                <div class="label-row">
+            const card = document.createElement('div');
+            card.className = 'slider-card';
+            card.innerHTML = `
+                <div class="card-header">
                     <span>${factor}</span>
                     <span id="val-${index}">5</span>
                 </div>
                 <div class="control-row">
                     <input type="range" id="slide-${index}" min="0" max="10" value="5" oninput="updateScore()">
-                    <button class="add-btn" onclick="increaseByOne(${index})">+</button>
+                    <button class="add-btn" onclick="boost(${index})">+</button>
                 </div>
             `;
-            container.appendChild(div);
+            container.appendChild(card);
         });
 
-        function increaseByOne(index) {
+        function boost(index) {
             const slider = document.getElementById(`slide-${index}`);
-            // Logic to allow going past 10
-            let currentVal = parseInt(slider.value);
-            slider.max = Math.max(slider.max, currentVal + 1);
-            slider.value = currentVal + 1;
+            let val = parseInt(slider.value);
+            slider.max = Math.max(slider.max, val + 1);
+            slider.value = val + 1;
             updateScore();
         }
 
         function updateScore() {
             let total = 0;
-            factors.forEach((_, index) => {
-                const val = parseInt(document.getElementById(`slide-${index}`).value);
-                document.getElementById(`val-${index}`).innerText = val;
-                total += val;
+            factors.forEach((_, i) => {
+                const v = parseInt(document.getElementById(`slide-${i}`).value);
+                document.getElementById(`val-${i}`).innerText = v;
+                total += v;
             });
 
             scoreDisplay.innerText = total;
+            const container = document.getElementById('score-container');
 
             if (total > 100) {
-                scoreWrapper.className = 'score-invalid';
+                container.className = 'score-invalid';
                 submitBtn.disabled = true;
             } else {
-                scoreWrapper.className = 'score-valid';
+                container.className = 'score-valid';
                 submitBtn.disabled = false;
             }
         }
 
         function handleSubmit() {
-            const total = parseInt(scoreDisplay.innerText);
-            if (total > 100) {
-                alert("Please adjust score to within 100 points");
-                return;
-            }
-            alert("Success! Sending data to Google Sheets...");
-            // This is where your fetch() to Google Apps Script would go
+            const name = document.getElementById('client-name').value;
+            if(!name) { alert("Please enter your name."); return; }
+            alert("Success! Sending rankings for " + name);
         }
     </script>
 </body>
