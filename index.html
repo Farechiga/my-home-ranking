@@ -177,6 +177,29 @@
             z-index: 1001;
         }
 
+
+                /* Loading Spinner Animation */
+        .spinner {
+            display: none; /* Hidden by default */
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Success State for the Button */
+        .submit-btn.success {
+            background-color: #2a9d8f;
+            pointer-events: none;
+        }
+                
         .submit-btn:disabled { background: #ccc; box-shadow: none; }
     </style>
 </head>
@@ -252,7 +275,7 @@
                 submitBtn.disabled = false;
             }
         }
-
+        
         async function handleSubmit() {
             const submitBtn = document.getElementById('submit');
             const name = document.getElementById('client-name').value;
@@ -264,10 +287,10 @@
                 return; 
             }
         
-            // 1. IMPROVE UX: Disable button and show loading state
+            // 1. PROVIDE IMMEDIATE FEEDBACK
             submitBtn.disabled = true;
-            submitBtn.innerText = "Sending...";
-            submitBtn.style.opacity = "0.5";
+            submitBtn.innerHTML = `Sending... <div class="spinner" style="display:inline-block;"></div>`;
+            submitBtn.style.opacity = "0.7";
         
             const rankings = factors.map((f, i) => ({
                 factor: f,
@@ -283,24 +306,23 @@
             const scriptURL = "https://script.google.com/macros/s/AKfycbzzc-aNjkv_19_xvlZPVFjiLTgFMxC1GGmMPXTfTcu6YbkmpUy6r0sGs-mpuq-H809MAg/exec";
         
             try {
-                // 2. SEND DATA
                 await fetch(scriptURL, {
                     method: "POST",
-                    mode: "no-cors", // Required for Google Scripts
+                    mode: "no-cors",
                     cache: "no-cache",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
                 });
         
-                // 3. SUCCESS UX: Clear the form or redirect
-                alert("Success! Your priorities have been sent to Eli Smith Realty.");
-                submitBtn.innerText = "Submitted ✅";
+                // 2. SHOW SUCCESS STATE
+                submitBtn.innerHTML = "Rankings Sent ✅";
+                submitBtn.classList.add('success');
+                alert("Success! Your priorities are saved.");
                 
             } catch (err) {
-                alert("Error: " + err);
-                // Re-enable if it fails so they can try again
+                alert("Something went wrong. Please try again.");
                 submitBtn.disabled = false;
-                submitBtn.innerText = "Submit Rankings";
+                submitBtn.innerHTML = "Submit Rankings";
                 submitBtn.style.opacity = "1";
             }
         }
